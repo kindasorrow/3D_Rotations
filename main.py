@@ -127,4 +127,4 @@ BasisRotation.rotate(mesh_basis_rotated, basis)
 # Визуализация всех вариантов вращения
 mesh_objects = [mesh, mesh_vector_rotated, mesh_bryan_rotated, mesh_basis_rotated, mesh_quaternion_rotated]
 titles = ["Original", "Vector & Angle", "Bryan", "Basis", "Quaternion"]
-#ObjectVisualizer.plot_objects_row(mesh_objects, titles)
+ObjectVisualizer.plot_objects_row(mesh_objects, titles)
