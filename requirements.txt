@@ -1,0 +1,5 @@
+trimesh~=4.5.3
+numpy~=1.26.4
+matplotlib~=3.9.2
+kagglehub~=0.3.4
+pyglet<2.0.0
