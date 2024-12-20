@@ -7,8 +7,22 @@ from transformations.basis import BasisRotation
 from transformations.quaternion import QuaternionRotation
 from visualisation.plot import ObjectVisualizer
 
+
 # Загрузка данных из ModelNet40
-loader = ModelNetLoader('C:\\Users\\kinda\\.cache\\kagglehub\\datasets\\balraj98\\modelnet40-princeton-3d-object-dataset\\versions\\1')
+loader = ModelNetLoader('C:\\Users\\kindasorrow\\.cache\\kagglehub\\datasets\\balraj98\\modelnet40-princeton-3d-object-dataset\\versions\\1')
+#loader.download_dataset()
+
+def Loss(source_mesh, target_mesh):
+    sum = 0
+    count_vertices = len(source_mesh.vertices)
+    for i in range(count_vertices):
+        sum += np.linalg.norm(source_mesh.vertices[i] - target_mesh.vertices[i]) ** 2
+
+    average = sum / count_vertices
+
+    return sum, average
+
+
 print("Path to dataset files:", loader.dataset_path)
 
 # Загрузка 3D-модели (пианино) из набора данных
@@ -40,6 +54,12 @@ yaw, pitch, roll = VectorAngleRotation.to_bryan(vector, angle)
 mesh_bryan_rotated = mesh.copy()
 BryanRotation.rotate(mesh_bryan_rotated, yaw, pitch, roll)
 
+print('VECTOR & ANGLE --- LOSS')
+print("Vector", Loss(mesh_vector_rotated, mesh_vector_rotated))
+print("Bryan", Loss(mesh_vector_rotated, mesh_bryan_rotated))
+print("Basis", Loss(mesh_vector_rotated, mesh_basis_rotated))
+print("Quat", Loss(mesh_vector_rotated, mesh_quaternion_rotated))
+
 # Визуализация всех вариантов вращения
 mesh_objects = [mesh, mesh_vector_rotated, mesh_bryan_rotated, mesh_basis_rotated, mesh_quaternion_rotated]
 titles = ["Original", "Vector & Angle", "Bryan", "Basis", "Quaternion"]
@@ -66,6 +86,12 @@ quaternion = BryanRotation.to_quaternion(roll, pitch, yaw)
 mesh_quaternion_rotated = mesh.copy()
 QuaternionRotation.rotate(mesh_quaternion_rotated, quaternion)
 
+print('BRYAN --- LOSS')
+print("Vector", Loss(mesh_vector_rotated, mesh_vector_rotated))
+print("Bryan", Loss(mesh_vector_rotated, mesh_bryan_rotated))
+print("Basis", Loss(mesh_vector_rotated, mesh_basis_rotated))
+print("Quat", Loss(mesh_vector_rotated, mesh_quaternion_rotated))
+
 # Визуализация всех вариантов вращения
 mesh_objects = [mesh, mesh_vector_rotated, mesh_bryan_rotated, mesh_basis_rotated, mesh_quaternion_rotated]
 titles = ["Original", "Vector & Angle", "Bryan", "Basis", "Quaternion"]
@@ -74,8 +100,8 @@ ObjectVisualizer.plot_objects_row(mesh_objects, titles)
 # --- Задание поворота с помощью базиса
 
 basis = np.array([
-    [0.866, -0.7, 0],  # Строки матрицы задают направление базисных векторов
-    [0.7, 0.866, 0],
+    [np.cos(30), -np.sin(30), 0],
+    [np.sin(30), np.cos(30), 0],
     [0, 0, 1]
 ])
 mesh_basis_rotated = mesh.copy()
@@ -96,6 +122,12 @@ quaternion = BasisRotation.to_quaternion(basis)
 mesh_quaternion_rotated = mesh.copy()
 QuaternionRotation.rotate(mesh_quaternion_rotated, quaternion)
 
+
+print('BASIS --- LOSS')
+print("Vector", Loss(mesh_vector_rotated, mesh_vector_rotated))
+print("Bryan", Loss(mesh_vector_rotated, mesh_bryan_rotated))
+print("Basis", Loss(mesh_vector_rotated, mesh_basis_rotated))
+print("Quat", Loss(mesh_vector_rotated, mesh_quaternion_rotated))
 # Визуализация всех вариантов вращения
 mesh_objects = [mesh, mesh_vector_rotated, mesh_bryan_rotated, mesh_basis_rotated, mesh_quaternion_rotated]
 titles = ["Original", "Vector & Angle", "Bryan", "Basis", "Quaternion"]
@@ -103,7 +135,7 @@ ObjectVisualizer.plot_objects_row(mesh_objects, titles)
 
 # --- Задание поворота с помощью кватерниона
 
-quaternion = [0, 0, 0.707, 0.707]  # Кватернион вращения
+quaternion = [0, 0, np.sin(45), np.cos(45)]  # Кватернион вращения
 
 # Вращение модели с использованием кватерниона
 mesh_quaternion_rotated = mesh.copy()
@@ -123,6 +155,12 @@ BryanRotation.rotate(mesh_bryan_rotated, yaw, pitch, roll)
 basis = QuaternionRotation.to_basis(quaternion)
 mesh_basis_rotated = mesh.copy()
 BasisRotation.rotate(mesh_basis_rotated, basis)
+
+print('QUAT --- LOSS')
+print("Vector", Loss(mesh_vector_rotated, mesh_vector_rotated))
+print("Bryan", Loss(mesh_vector_rotated, mesh_bryan_rotated))
+print("Basis", Loss(mesh_vector_rotated, mesh_basis_rotated))
+print("Quat", Loss(mesh_vector_rotated, mesh_quaternion_rotated))
 
 # Визуализация всех вариантов вращения
 mesh_objects = [mesh, mesh_vector_rotated, mesh_bryan_rotated, mesh_basis_rotated, mesh_quaternion_rotated]
